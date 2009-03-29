@@ -1,0 +1,13 @@
+h1. Domain Explorer
+
+Domain Explorer is a simple tool for batch analysis of domain names It is a PHP script designed to be run on a web-server.  It is not currently publicly hosted.
+
+Give it a list of domain names, and it will return the following information:
+
+ * Name server
+ * Mail server IP and host 
+ * Web server IP and host
+
+The hosts listed are determined by reverse DNS, so that you can more easily see the "actual" server that is hosting a given site.
+
+It is useful for answering questions like "which of the domains hosted on our server are still actually active?"
