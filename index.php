@@ -20,11 +20,18 @@ if(isset($_REQUEST['Domains'])) {
 	if(isset($_REQUEST['Flush'])) $_SESSION['domainInfo'] = array();
 	
 	$domainInfo = array();
-	$domains = explode("\n", trim($_REQUEST['Domains']));
-	foreach($domains as $domain) {
+
+	// Create cleansed domain array
+	$domains = preg_split("/[\n\r\t ]+/", trim($_REQUEST['Domains']));
+	foreach($domains as $i => $domain) {
 		$domain = trim($domain);
-		if(!$domain) continue;
-		$domain = preg_replace('/^www\./','',$domain);
+		if(!$domain) unset($domains[$i]);
+		else $domains[$i] = preg_replace('/^www\./','',$domain);
+	}
+	$domains = array_unique($domains);
+
+	// Process domains
+	foreach($domains as $domain) {
 		$domainInfo[] = domainInfo($domain);
 	}
 	
@@ -65,7 +72,7 @@ function domainInfo($domain) {
 		$CLI_wwwdomain = escapeshellarg("www.$domain");
 		
 		$websiteip = $websitehost = $nameserver = $mailhost = $mailip = $revhost = "";
-		$registrar = trim(str_replace('registrar_name:','', `whois $CLI_domain | grep registrar_name`));
+		//$registrar = trim(str_replace('registrar_name:','', `whois $CLI_domain | grep registrar_name`));
 
 		$nameserver = trim(`dig ns $CLI_domain | grep "ANSWER SECTION" --after 1 | tail -n 1 | awk "{ print \\\$5 }"`);
 		if($nameserver) {
@@ -85,7 +92,7 @@ function domainInfo($domain) {
 		}
 		$_SESSION['domainInfo'][$domain] = array(
 			'Domain' => $domain,
-			'Registrar' => $registrar,
+			//'Registrar' => $registrar,
 			'Nameserver' => $nameserver,
 			'Website Host' => $websitehost,
 			'Website IP' => $websiteip,
